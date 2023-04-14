@@ -12,20 +12,12 @@ from flask_wtf.csrf import CSRFProtect
 # App Config.
 # ----------------------------------------------------------------------------#
 
-app = Flask(__name__)
-moment = Moment(app)
-app.config.from_object('config')
-db = SQLAlchemy(app)
-
-# TODO: connect to a local postgresql database
-migrate = Migrate(app, db)  # to run migrations
-
-csrf = CSRFProtect(app)  # to protect against CSRF attacks
-
+db = SQLAlchemy()
 
 # ----------------------------------------------------------------------------#
 # Models.
 # ----------------------------------------------------------------------------#
+
 
 class Venue(db.Model):
     __tablename__ = 'Venue'
@@ -43,7 +35,7 @@ class Venue(db.Model):
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
     shows = db.relationship('Show', backref='venue', lazy='joined')
-    #shows = db.relationship('Show', backref='artist', lazy=False)
+    # shows = db.relationship('Show', backref='artist', lazy=False)
     website = db.Column(db.String(120))
 
     def __repr__(self):

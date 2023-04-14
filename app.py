@@ -31,7 +31,6 @@ from config import SQLALCHEMY_DATABASE_URI
 app = Flask(__name__)
 app.config.from_object('config')
 
-db = SQLAlchemy()
 moment = Moment(app)
 db.init_app(app)  # to connect to a local postgresql database
 
