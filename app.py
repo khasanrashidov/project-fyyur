@@ -4,24 +4,24 @@
 # ----------------------------------------------------------------------------#
 
 import json
+import logging
 import sys
-import dateutil.parser  # to parse datetime strings
+from datetime import datetime
+from logging import FileHandler, Formatter
+
 import babel
-from flask import Flask, render_template, redirect, url_for, request
-from flask import Flask, abort, jsonify, flash, Response
+import dateutil.parser  # to parse datetime strings
+from flask import (Flask, Response, abort, flash, jsonify, redirect,
+                   render_template, request, url_for)
 from flask_migrate import Migrate
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
-import logging
-from logging import Formatter, FileHandler
 from flask_wtf import FlaskForm as Form
-from forms import *
 from flask_wtf.csrf import CSRFProtect  # to protect against CSRF attacks
-from datetime import datetime
 
-from models import db, Venue, Artist, Show
 from config import SQLALCHEMY_DATABASE_URI
-
+from forms import *
+from models import Artist, Show, Venue, db
 
 # ----------------------------------------------------------------------------#
 # App Config.
@@ -35,12 +35,10 @@ moment = Moment(app)
 db.init_app(app)  # to connect to a local postgresql database
 
 migrate = Migrate(app, db)  # to run migrations
-csrf = CSRFProtect(app)  # to protect against CSRF attacks
 
 # ----------------------------------------------------------------------------#
 # Filters.
 # ----------------------------------------------------------------------------#
-
 
 def format_datetime(value, format='medium'):
     date = dateutil.parser.parse(value)
@@ -127,7 +125,7 @@ def show_venue(venue_id):
         "city": venue.city,
         "state": venue.state,
         "phone": venue.phone,
-        "website": venue.website_link,
+        "website": venue.website,
         "facebook_link": venue.facebook_link,
         "seeking_talent": venue.seeking_talent,
         "seeking_description": venue.seeking_description,
@@ -165,7 +163,8 @@ def create_venue_form():
 def create_venue_submission():
     # TODO: insert form data as a new Venue record in the db, instead
     # TODO: modify data to be the data object returned from db insertion
-    form = VenueForm(request.form)
+    # csrf=False to avoid csrf token error
+    form = VenueForm(request.form, meta={'csrf': False})
     if form.validate():
         try:
             venue = Venue(
@@ -177,7 +176,7 @@ def create_venue_submission():
                 genres=form.genres.data,
                 facebook_link=form.facebook_link.data,
                 image_link=form.image_link.data,
-                website_link=form.website_link.data,
+                website=form.website.data,
                 seeking_talent=form.seeking_talent.data,
                 seeking_description=form.seeking_description.data
             )
@@ -425,7 +424,8 @@ def create_artist_submission():
     # called upon submitting the new artist listing form
     # TODO: insert form data as a new Venue record in the db, instead
     # TODO: modify data to be the data object returned from db insertion
-    form = ArtistForm(request.form)
+    # meta={'csrf': False} to disable csrf token
+    form = ArtistForm(request.form, meta={'csrf': False})
     if form.validate():
         try:
             artist = Artist(name=form.name.data, city=form.city.data, state=form.state.data, phone=form.phone.data,
@@ -489,7 +489,7 @@ def create_shows():
 def create_show_submission():
     # called to create new shows in the db, upon submitting new show listing form
     # TODO: insert form data as a new Show record in the db, instead
-    form = ShowForm(request.form)
+    form = ShowForm(request.form, meta={'csrf': False})
     if form.validate():
         try:
             show = Show(artist_id=form.artist_id.data, venue_id=form.venue_id.data,
