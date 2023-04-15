@@ -1,5 +1,6 @@
 import enum
 
+
 class Genre(enum.Enum):
     Alternative = 'Alternative'
     Blues = 'Blues'
@@ -23,7 +24,8 @@ class Genre(enum.Enum):
 
     @classmethod
     def choices(cls):
-        """ Methods decorated with @classmethod can be called statically without having an instance of the class."""
+        """ Methods decorated with @classmethod can be called
+          statically without having an instance of the class."""
         return [(choice.name, choice.value) for choice in cls]
 
 

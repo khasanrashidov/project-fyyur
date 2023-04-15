@@ -1,7 +1,15 @@
 from datetime import datetime
 from flask_wtf import FlaskForm as Form
-from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField
-from wtforms.validators import DataRequired, AnyOf, URL, Regexp, Optional
+from wtforms import StringField, \
+    SelectField, \
+    SelectMultipleField, \
+    DateTimeField, \
+    BooleanField
+from wtforms.validators import DataRequired, \
+    AnyOf, \
+    URL, \
+    Regexp, \
+    Optional
 from flask_wtf.csrf import CSRFProtect
 from flask import Flask
 import re  # regular expressions for phone number validation
